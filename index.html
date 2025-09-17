@@ -2,24 +2,70 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Western Wallet Bot</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Mini Search with Bot Gate</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; }
+    input { width: 60%; padding: 8px; }
+    button { padding: 8px 12px; }
+    .result { margin: 15px; padding: 10px; border-bottom: 1px solid #ddd; }
+    .locked { color: red; font-weight: bold; }
+    .unlocking { color: orange; }
+  </style>
 </head>
 <body>
-  <header>
-    <h1>Western Wallet Bot 🌍</h1>
-  </header>
+  <h1>Mini Search 🔍</h1>
+  <input type="text" id="query" placeholder="Search anything...">
+  <button onclick="search()">Search</button>
 
-  <main>
-    <h2>Make friends & share info safely</h2>
-    <p>Our Telegram bot helps you connect with people and exchange details only if you both agree.</p>
-    
-    <a href="https://t.me/westernwalletbot" class="btn">Open Bot on Telegram</a>
-  </main>
+  <div id="results"></div>
 
-  <footer>
-    <p>© 2025 Western Wallet</p>
-  </footer>
+  <script>
+    const apiKey = "AIzaSyCtz3gvFka9sE-TtZu4Be8PZs7Ql-xsZ-s";  // Replace with your Google API key
+    const cx = "YOUR_SEARCH_ENGINE_ID"; // Replace with your Custom Search Engine ID
+
+    let botStarted = false;
+
+    async function search() {
+      const query = document.getElementById("query").value;
+      const url = `https://www.googleapis.com/customsearch/v1?q=${encodeURIComponent(query)}&key=${apiKey}&cx=${cx}`;
+
+      const res = await fetch(url);
+      const data = await res.json();
+
+      const resultsDiv = document.getElementById("results");
+      resultsDiv.innerHTML = "";
+
+      if (data.items) {
+        data.items.forEach((item, index) => {
+          const div = document.createElement("div");
+          div.className = "result";
+          div.id = `result-${index}`;
+          div.innerHTML = `
+            <h3><a href="${item.link}" target="_blank">${item.title}</a></h3>
+            <p>${item.snippet}</p>
+            <div class="lock-msg">
+              ${botStarted 
+                ? `<a href="${item.link}" target="_blank"><button>Download</button></a>` 
+                : `<p class="locked">🔒 To download, you must <a href="https://t.me/westernwalletbot" target="_blank" onclick="unlockAfterDelay(${index}, '${item.link}')">Start the Bot</a></p>`
+              }
+            </div>
+          `;
+          resultsDiv.appendChild(div);
+        });
+      } else {
+        resultsDiv.innerHTML = "<p>No results found</p>";
+      }
+    }
+
+    function unlockAfterDelay(index, link) {
+      const resultDiv = document.getElementById(`result-${index}`);
+      const lockMsg = resultDiv.querySelector(".lock-msg");
+      lockMsg.innerHTML = `<p class="unlocking">⏳ Unlocking in 10 seconds...</p>`;
+
+      setTimeout(() => {
+        lockMsg.innerHTML = `<a href="${link}" target="_blank"><button>Download</button></a>`;
+      }, 10000); // 10 seconds
+    }
+  </script>
 </body>
 </html>
