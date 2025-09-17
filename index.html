@@ -2,14 +2,20 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Mini Search with Bot Gate</title>
+  <title>Mini Search with Bot Gate + Ads</title>
   <style>
     body { font-family: Arial, sans-serif; text-align: center; }
-    input { width: 60%; padding: 8px; }
+    input { width: 60%; padding: 8px; margin: 10px 0; }
     button { padding: 8px 12px; }
     .result { margin: 15px; padding: 10px; border-bottom: 1px solid #ddd; }
     .locked { color: red; font-weight: bold; }
-    .unlocking { color: orange; }
+    .ad-box {
+      border: 2px dashed #999;
+      padding: 15px;
+      margin: 10px auto;
+      width: 80%;
+      background: #f9f9f9;
+    }
   </style>
 </head>
 <body>
@@ -20,10 +26,16 @@
   <div id="results"></div>
 
   <script>
-    const apiKey = "AIzaSyCtz3gvFka9sE-TtZu4Be8PZs7Ql-xsZ-s";  // Replace with your Google API key
-    const cx = "YOUR_SEARCH_ENGINE_ID"; // Replace with your Custom Search Engine ID
+    // ✅ Replace these with your real values
+    const apiKey = "AIzaSyBkX4XDW4TIueYjKQUlnIf-mgggoNrn6FU";  
+    const cx = "https://cse.google.com/cse.js?cx=7207aa6c10f27462e"; 
 
-    let botStarted = false;
+    let ads = [];
+
+    // Load ads from ads.json
+    fetch("ads.json")
+      .then(res => res.json())
+      .then(data => { ads = data.ads; });
 
     async function search() {
       const query = document.getElementById("query").value;
@@ -44,10 +56,10 @@
             <h3><a href="${item.link}" target="_blank">${item.title}</a></h3>
             <p>${item.snippet}</p>
             <div class="lock-msg">
-              ${botStarted 
-                ? `<a href="${item.link}" target="_blank"><button>Download</button></a>` 
-                : `<p class="locked">🔒 To download, you must <a href="https://t.me/westernwalletbot" target="_blank" onclick="unlockAfterDelay(${index}, '${item.link}')">Start the Bot</a></p>`
-              }
+              <p class="locked">🔒 To download, you must 
+                <a href="https://t.me/westernwalletbot" target="_blank" 
+                   onclick="showAd(${index}, '${item.link}')">Start the Bot</a>
+              </p>
             </div>
           `;
           resultsDiv.appendChild(div);
@@ -57,14 +69,31 @@
       }
     }
 
-    function unlockAfterDelay(index, link) {
+    function showAd(index, link) {
       const resultDiv = document.getElementById(`result-${index}`);
       const lockMsg = resultDiv.querySelector(".lock-msg");
-      lockMsg.innerHTML = `<p class="unlocking">⏳ Unlocking in 10 seconds...</p>`;
 
-      setTimeout(() => {
-        lockMsg.innerHTML = `<a href="${link}" target="_blank"><button>Download</button></a>`;
-      }, 10000); // 10 seconds
+      // Pick random ad
+      const ad = ads[Math.floor(Math.random() * ads.length)];
+      let timeLeft = 10;
+
+      lockMsg.innerHTML = `
+        <div class="ad-box">
+          <h3>${ad.title}</h3>
+          <p>${ad.text}</p>
+          <p><b>Ad:</b> <a href="${ad.link}" target="_blank">Visit Sponsor</a></p>
+          <p>⏳ Please wait <span id="timer-${index}">${timeLeft}</span> seconds...</p>
+        </div>
+      `;
+
+      const timer = setInterval(() => {
+        timeLeft--;
+        document.getElementById(`timer-${index}`).textContent = timeLeft;
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          lockMsg.innerHTML = `<a href="${link}" target="_blank"><button>✅ Download</button></a>`;
+        }
+      }, 1000);
     }
   </script>
 </body>
