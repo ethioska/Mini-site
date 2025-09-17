@@ -2,13 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Mini Search with Bot Gate + Ads</title>
+  <title>Mini Search 🔍</title>
   <style>
     body { font-family: Arial, sans-serif; text-align: center; }
     input { width: 60%; padding: 8px; margin: 10px 0; }
     button { padding: 8px 12px; }
-    .result { margin: 15px; padding: 10px; border-bottom: 1px solid #ddd; }
+    .result { margin: 15px; padding: 10px; border-bottom: 1px solid #ddd; text-align: left; }
     .locked { color: red; font-weight: bold; }
+    img { max-width: 120px; display: block; margin: 5px 0; }
     .ad-box {
       border: 2px dashed #999;
       padding: 15px;
@@ -26,9 +27,9 @@
   <div id="results"></div>
 
   <script>
-    // ✅ Replace these with your real values
-    const apiKey = "AIzaSyBkX4XDW4TIueYjKQUlnIf-mgggoNrn6FU";  
-    const cx = "7207aa6c10f27462e"; 
+    // ✅ Your keys
+    const apiKey = "AIzaSyBkX4XDW4TIueYjKQUlnIf-mgggoNrn6FU";
+    const cx = "7207aa6c10f27462e";
 
     let ads = [];
 
@@ -56,7 +57,7 @@
             <h3><a href="${item.link}" target="_blank">${item.title}</a></h3>
             <p>${item.snippet}</p>
             <div class="lock-msg">
-              <p class="locked">🔒 To download, you must 
+              <p class="locked">🔒 To open/download, you must 
                 <a href="https://t.me/westernwalletbot" target="_blank" 
                    onclick="showAd(${index}, '${item.link}')">Start the Bot</a>
               </p>
@@ -91,7 +92,7 @@
         document.getElementById(`timer-${index}`).textContent = timeLeft;
         if (timeLeft <= 0) {
           clearInterval(timer);
-          lockMsg.innerHTML = `<a href="${link}" target="_blank"><button>✅ Download</button></a>`;
+          lockMsg.innerHTML = `<a href="${link}" target="_blank"><button>✅ Continue</button></a>`;
         }
       }, 1000);
     }
