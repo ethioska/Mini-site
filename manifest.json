@@ -1,11 +1,10 @@
 {
-  "name": "Mini Search 🔍",
-  "short_name": "MiniSearch",
-  "start_url": "/",
+  "name": "Mini Site",
+  "short_name": "MiniSite",
+  "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#f4f4f9",
-  "theme_color": "#4A90E2",
-  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#000000",
   "icons": [
     {
       "src": "icon-192.png",
